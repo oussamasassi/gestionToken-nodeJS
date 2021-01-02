@@ -2,6 +2,9 @@ const express = require("express");
 const connectDB = require("./config/db");
 const app = express();
 
+app.use(express.json({ extended: false }));
+
+//routing
 app.use("/api/users", require("../server/routes/api/users"));
 app.use("/api/posts", require("../server/routes/api/posts"));
 app.use("/api/profile", require("../server/routes/api/profile"));
