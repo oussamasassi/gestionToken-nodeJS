@@ -4,7 +4,8 @@ const router = express.Router();
 const User = require("../../models/User");
 const gravatar = require("gravatar");
 const bcrypt = require("bcryptjs");
-
+const jwt = require("jsonwebtoken");
+const config = require("config");
 //@Route POST api/users
 //adding users
 //@acces public
@@ -51,7 +52,22 @@ router.post(
       var salt = await bcrypt.genSaltSync(10);
       user.password = await bcrypt.hash(password, salt);
       await user.save();
-      res.send("User registred");
+      //create token
+      const playload = {
+        user: {
+          id: user.id,
+        },
+      };
+
+      jwt.sign(
+        playload,
+        config.get("jwtToken"),
+        { expiresIn: 3600 },
+        (err, token) => {
+          if (err) throw err;
+          else res.send({ token });
+        }
+      );
     } catch (error) {
       console.log(error.message);
       res.status(500).send("Server error");
